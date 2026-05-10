@@ -1,10 +1,7 @@
 package com.example.testcasedemo.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -12,6 +9,7 @@ import org.hibernate.type.SqlTypes;
 import java.util.UUID;
 
 @Data
+@Builder
 @Entity
 @Table(name = "Person", schema = "Dblock")
 public class Person {

@@ -4,15 +4,7 @@ Use this repository as a starting point to try any Spring Boot Project with loca
 This connects with SQL running on Docker.
 
 ------- MS-SQL -------
-
-If you are running ms-sql image using CMD, then use the below commands
-
-docker pull mcr.microsoft.com/mssql/server:2019-latest
-
-docker run -e 'ACCEPT_EULA=Y' -e 'MSSQL_SA_PASSWORD=<YourStrong!Passw0rd>' -p 1401:1433 -d mcr.microsoft.com/mssql/server:2019-CU18-ubuntu-20.04
-
-If you are using docker compose YML file, then use the below command 
-
+Use this command to bring redis and MS-SQL up.
 docker-compose up -d
 
 Use the below commands to connect to MSSQL server running on Docker. Run these commands on the ms-sql container terminal of Docker. Use command "GO" to run the query.

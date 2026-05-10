@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   cache:
     image: redis:6.2-alpine
@@ -6,27 +5,52 @@ services:
     ports:
       - '6379:6379'
     command: redis-server --save 20 1 --loglevel warning
-    volumes: 
+    volumes:
       - cache:/data
+
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=${Sa_Password:-password123}
+      # Using a strong password to satisfy Microsoft security policy
+      - MSSQL_SA_PASSWORD=${MSSQL_PASSWORD:-CachyOS_Sql_2026!}
       - MSSQL_PID=Developer
     ports:
-      - 1433:1433
+      - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
+      # Mount your local sql file to a path inside the container
+      - ./init.sql:/usr/config/init.sql
     restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${Sa_Password:-password123} -Q 'SELECT 1' || exit 1"]
-      interval: 10s
-      retries: 10
-      start_period: 10s
-      timeout: 3s
-    
+    # We override the default entrypoint to run our "Create DB" script alongside the engine
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        # 1. Start a BACKGROUND process (the parentheses and '&' at the end)
+        # This part runs in parallel so the script doesn't block the engine from starting.
+        # The setup script must be sent to the background because the SQL Server engine is a 'blocking' process;
+        # if started first, it would capture the terminal indefinitely and prevent the database creation command from ever being reached
+        (
+          # Loop until the database engine (started below) is ready to accept connections
+          # Microsoft updated the tools in the 2022-latest image. These new tools require a secure connection by default. 
+          # Docker containers generate their own SSL certificates on the fly. Since these aren't from a verified authority (like DigiCert), the new sqlcmd blocks the connection for safety.
+          # Added the -C flag to trust the self-signed certificate
+          until /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "${MSSQL_PASSWORD:-CachyOS_Sql_2026!}" -C -i /usr/config/init.sql
+          do
+            echo "Waiting for SQL Server to be ready..."
+            sleep 2
+          done
+          echo "Database 'lockdb' created or already exists!"
+        ) & 
+
+        # 2. Start the SQL Server Engine in the FOREGROUND
+        # This is the "main" process. As long as this runs, the container stays alive.
+        # It starts immediately because the script above was pushed to the background.
+        /opt/mssql/bin/sqlservr
+
 volumes:
   cache:
     driver: local
   sqlserver_data:
+    driver: local
