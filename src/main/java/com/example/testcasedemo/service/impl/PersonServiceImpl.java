@@ -7,7 +7,6 @@ import com.example.testcasedemo.repository.PersonRepository;
 import com.example.testcasedemo.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(isolation= Isolation.READ_COMMITTED)
+@Transactional
 public class PersonServiceImpl implements PersonService {
 
     @Autowired
