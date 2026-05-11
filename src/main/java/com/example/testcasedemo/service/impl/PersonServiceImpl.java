@@ -29,7 +29,6 @@ public class PersonServiceImpl implements PersonService {
                         .personId(person.getPersonId())
                         .firstName(person.getFirstName())
                         .lastName(person.getLastName())
-                        .version(person.getVersion())
                         .build())
                 .collect(Collectors.toList());
     }

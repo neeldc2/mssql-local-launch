@@ -1,24 +1,19 @@
 package com.example.testcasedemo.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PersonResponse {
     private UUID id;
     private int personId;
     private String firstName;
     private String lastName;
-    private int version;
-
-    public PersonResponse(UUID id, int personId, String firstName, String lastName, int version) {
-        this.id = id;
-        this.personId = personId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.version = version;
-    }
 }

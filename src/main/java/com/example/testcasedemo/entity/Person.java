@@ -1,8 +1,10 @@
 package com.example.testcasedemo.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -12,6 +14,8 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "Person", schema = "Dblock")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Person {
 
     @Id
